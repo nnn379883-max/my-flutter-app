@@ -341,7 +341,8 @@ class ChatsTab extends StatefulWidget {
 }
 
 class _ChatsTabState extends State<ChatsTab> {
-  final List> _chats = [
+  // تم استخدام List مباشرة لتجنب أي مشاكل في الأقواس والترجمة أثناء البناء السحابي
+  final List _chats = [
     {
       'name': 'أحمد السعدي',
       'message': 'هل نلتقي اليوم لمناقشة المشروع؟',
@@ -462,7 +463,7 @@ class _ChatsTabState extends State<ChatsTab> {
     );
   }
 
-  Widget _buildChatItem(Map<String, dynamic> chat) {
+  Widget _buildChatItem(Map chat) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
@@ -477,4 +478,83 @@ class _ChatsTabState extends State<ChatsTab> {
                 radius: 28,
                 backgroundImage: NetworkImage(chat['avatar']),
               ),
-              if
+              if (chat['isOnline'])
+                Positioned(
+                  bottom: 2,
+                  right: 2,
+                  child: Container(
+                    width: 13,
+                    height: 13,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00E676),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFF0D061A),
+                        width: 2.2,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  chat['name'],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  chat['message'],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white.withOpacity(0.6),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                chat['time'],
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white.withOpacity(0.5),
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (chat['unread'] > 0)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFF2A6D),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '${chat['unread']}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
