@@ -4,8 +4,6 @@ workflows:
     environment:
       flutter: stable
     scripts:
-      - name: Initialize Android structure
-        script: flutter create . --platforms=android --org com.neonsocial
       - name: Get dependencies
         script: flutter pub get
       - name: Build APK
