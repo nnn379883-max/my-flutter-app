@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "217541700306",
+    "project_id": "novax-app-6b4fe",
+    "storage_bucket": "novax-app-6b4fe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217541700306:android:2e201a4bbf13ba20ad1b0b",
+        "android_client_info": {
+          "package_name": "com.novax.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFu6RR-2c78ef5Mfe4o80m8wWv9lGt7Ws"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
