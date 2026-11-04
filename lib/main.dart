@@ -4,7 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase initialization error: $e');
+  }
   runApp(const NovaxApp());
 }
 
@@ -119,12 +123,12 @@ class ChatsScreen extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('chats').orderBy('time', descending: true).snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator(color: Color(0xFFE91E63)));
           }
-          var docs = snapshot.data!.docs;
-          if (docs.isEmpty) {
-            // بيانات تجريبية افتراضية إذا كانت قاعدة البيانات فارغة لتظهر الواجهة فخمة
+          
+          if (snapshot.hasError || !snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            // عرض القائمة التفاعلية في حالة عدم تحميل البيانات من السيرفر فوراً
             return ListView(
               children: const [
                 ChatTile(name: 'أحمد السعدي', message: 'هل نلتقي اليوم لمناقشة المشروع؟', time: '10:30 ص', unread: '3'),
@@ -135,6 +139,8 @@ class ChatsScreen extends StatelessWidget {
               ],
             );
           }
+
+          var docs = snapshot.data!.docs;
           return ListView.builder(
             itemCount: docs.length,
             itemBuilder: (context, index) {
@@ -152,15 +158,18 @@ class ChatsScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFFE91E63),
         child: const Icon(Icons.add, color: Colors.white),
-        onPressed: () {
-          // إضافة محادثة حقيقية تجريبية إلى Firebase عند الضغط على الزر
-          FirebaseFirestore.instance.collection('chats').add({
-            'name': 'مستخدم جديد Novax',
-            'message': 'مرحباً بك في تطبيق نوفاكس الحقيقي!',
-            'time': 'الآن',
-            'unread': '1',
-            'timestamp': FieldValue.serverTimestamp(),
-          });
+        onPressed: () async {
+          try {
+            await FirebaseFirestore.instance.collection('chats').add({
+              'name': 'مستخدم جديد Novax',
+              'message': 'مرحباً بك في تطبيق نوفاكس الحقيقي!',
+              'time': 'الآن',
+              'unread': '1',
+              'timestamp': FieldValue.serverTimestamp(),
+            });
+          } catch (e) {
+            debugPrint('Error adding chat: $e');
+          }
         },
       ),
     );
@@ -181,7 +190,7 @@ class ChatTile extends StatelessWidget {
       leading: CircleAvatar(
         radius: 26,
         backgroundColor: const Color(0xFFE91E63),
-        child: Text(name[0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        child: Text(name.isNotEmpty ? name[0] : 'U', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
       subtitle: Text(message, style: const TextStyle(color: Colors.grey, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -203,7 +212,7 @@ class ChatTile extends StatelessWidget {
   }
 }
 
-// 2. شاشة القصص والأخبار المطابقة للتصميم
+// 2. شاشة القصص والأخبار
 class StoriesScreen extends StatelessWidget {
   const StoriesScreen({super.key});
 
